@@ -1,4 +1,132 @@
+/* Existing styles */
 .completed {
     text-decoration: line-through;
     color: #6c757d;
+}
+
+/* Add these new styles for responsiveness */
+
+/* Base styles for all screen sizes */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.container {
+    width: 100%;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+input[type="text"], button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    background-color: #f4f4f4;
+    margin-bottom: 10px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Pagination styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.pagination button {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    color: black;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .3s;
+    margin: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+.pagination button:hover {
+    background-color: #ddd;
+}
+
+.pagination button.active {
+    background-color: #4CAF50;
+    color: white;
+    border: 1px solid #4CAF50;
+}
+
+.pagination button.disabled {
+    color: #ddd;
+    pointer-events: none;
+}
+
+/* Media query for screens smaller than 600px (typical mobile devices) */
+@media screen and (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    input[type="text"], button {
+        font-size: 16px; /* Larger font size for better touch targets */
+    }
+
+    li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    li button {
+        margin-top: 10px;
+        width: auto;
+    }
+
+    /* Pagination adjustments for mobile */
+    .pagination {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .pagination button {
+        margin: 2px 0;
+        width: 100%;
+    }
+}
+
+/* Media query for screens between 601px and 900px (tablets and small desktops) */
+@media screen and (min-width: 601px) and (max-width: 900px) {
+    body {
+        padding: 15px;
+    }
+
+    .container {
+        max-width: 90%;
+    }
+
+    /* Pagination adjustments for tablets */
+    .pagination button {
+        padding: 10px 18px;
+        font-size: 14px;
+    }
 }

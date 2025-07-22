@@ -13,6 +13,8 @@ const fromDate = document.getElementById('fromDate');
 const toDate = document.getElementById('toDate');
 const loadingSpinner = document.getElementById('loadingSpinner');
 const errorMessage = document.getElementById('errorMessage');
+const prevPageBtn = document.getElementById('prevPage');
+const nextPageBtn = document.getElementById('nextPage');
 
 // Fetch todos from API
 async function fetchTodos() {
@@ -20,7 +22,7 @@ async function fetchTodos() {
         showLoading(true);
         const response = await axios.get(`${API_URL}?limit=150`); 
         todos = response.data.todos;
-        renderTodos();
+        displayTodos();
     } catch (error) {
         showError('Failed to fetch todos. Please try again later.');
     } finally {
@@ -28,12 +30,17 @@ async function fetchTodos() {
     }
 }
 
-// Render todos
-function renderTodos() {
+// Display todos with pagination
+function displayTodos() {
     const filteredTodos = filterTodos();
-    const paginatedTodos = paginateTodos(filteredTodos);
-    
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const paginatedTodos = filteredTodos.slice(startIndex, endIndex);
+
+    // Clear the existing list
     todoList.innerHTML = '';
+
+    // Add the paginated todos to the list
     paginatedTodos.forEach(todo => {
         const li = document.createElement('li');
         li.className = `list-group-item ${todo.completed ? 'completed' : ''}`;
@@ -41,7 +48,9 @@ function renderTodos() {
         todoList.appendChild(li);
     });
 
-    renderPagination(filteredTodos.length);
+    // Update pagination buttons
+    prevPageBtn.classList.toggle('disabled', currentPage === 1);
+    nextPageBtn.classList.toggle('disabled', endIndex >= filteredTodos.length);
 }
 
 // Filter todos based on search and date range
@@ -60,41 +69,13 @@ function filterTodos() {
     });
 }
 
-// Paginate todos
-function paginateTodos(filteredTodos) {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredTodos.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-}
-
-// Render pagination
-function renderPagination(totalItems) {
-    const pageCount = Math.ceil(totalItems / ITEMS_PER_PAGE);
-    pagination.innerHTML = '';
-
-    for (let i = 1; i <= pageCount; i++) {
-        const li = document.createElement('li');
-        li.className = `page-item ${i === currentPage ? 'active' : ''}`;
-        const a = document.createElement('a');
-        a.className = 'page-link';
-        a.href = '#';
-        a.textContent = i;
-        a.addEventListener('click', (e) => {
-            e.preventDefault();
-            currentPage = i;
-            renderTodos();
-        });
-        li.appendChild(a);
-        pagination.appendChild(li);
-    }
-}
-
 // Add new todo
 async function addTodo(todo) {
     try {
         showLoading(true);
         const response = await axios.post(API_URL + '/add', { todo, completed: false, userId: 1 });
         todos.unshift(response.data);
-        renderTodos();
+        displayTodos();
         newTodoInput.value = '';
     } catch (error) {
         showError('Failed to add todo. Please try again later.');
@@ -128,11 +109,25 @@ addTodoForm.addEventListener('submit', (e) => {
 
 searchInput.addEventListener('input', () => {
     currentPage = 1;
-    renderTodos();
+    displayTodos();
 });
 
-fromDate.addEventListener('change', renderTodos);
-toDate.addEventListener('change', renderTodos);
+fromDate.addEventListener('change', displayTodos);
+toDate.addEventListener('change', displayTodos);
+
+prevPageBtn.addEventListener('click', () => {
+    if (currentPage > 1) {
+        currentPage--;
+        displayTodos();
+    }
+});
+
+nextPageBtn.addEventListener('click', () => {
+    if ((currentPage * ITEMS_PER_PAGE) < todos.length) {
+        currentPage++;
+        displayTodos();
+    }
+});
 
 // Initial fetch
 fetchTodos();
